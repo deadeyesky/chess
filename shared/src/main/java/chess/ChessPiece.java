@@ -75,7 +75,7 @@ public class ChessPiece {
         int[][] rookMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}};
         int[][] kingMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
         int[][] queenMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
-        int[][] knightMoveSet = {{-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+        int[][] knightMoveSet = {{-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,2}, {1,-2}, {2,1}, {2,-1}};
 
         switch (type) {
             case BISHOP:
@@ -89,6 +89,9 @@ public class ChessPiece {
 
             case QUEEN:
                 addTrajectories(possibleMoves, board, myPosition, queenMoveSet, 8); break;
+
+            case KNIGHT:
+                addTrajectories(possibleMoves, board, myPosition, knightMoveSet, 1); break;
         }
         return possibleMoves;
     }
