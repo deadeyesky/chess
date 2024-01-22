@@ -75,6 +75,7 @@ public class ChessPiece {
 
         int[][] bishopMoveSet = {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
         int[][] rookMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}};
+        int[][] queenMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
 
         switch (type) {
             case BISHOP:
@@ -82,15 +83,18 @@ public class ChessPiece {
 
             case ROOK:
                 addTrajectories(possibleMoves, board, myPosition, rookMoveSet); break;
+
+            case QUEEN:
+                addTrajectories(possibleMoves, board, myPosition, queenMoveSet); break;
         }
         return possibleMoves;
     }
 
     private void addTrajectories(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, int[][] directions) {
-        for (int[] dir : directions) {
-            for (int mul = 1; mul <= 8; mul++) {
-                int row = myPosition.getRow() + (mul * dir[0]);
-                int col = myPosition.getColumn() + (mul * dir[1]);
+        for (int[] movement : directions) {
+            for (int length = 1; length <= 8; length++) {
+                int row = myPosition.getRow() + (length * movement[0]);
+                int col = myPosition.getColumn() + (length * movement[1]);
 
                 if (row < 1 || row > 8 || col < 1 || col > 8) break;
 
@@ -101,10 +105,10 @@ public class ChessPiece {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPiece that = (ChessPiece) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        ChessPiece that = (ChessPiece) object;
         return pieceColor == that.pieceColor && type == that.type;
     }
 
