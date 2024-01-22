@@ -74,13 +74,14 @@ public class ChessPiece {
         HashSet<ChessMove> possibleMoves = new HashSet<>();
 
         int[][] bishopMoveSet = {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
+        int[][] rookMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}};
 
         switch (type) {
             case BISHOP:
                 addTrajectories(possibleMoves, board, myPosition, bishopMoveSet); break;
 
-//            case KNIGHT:
-//                addTrajectories(possibleMoves, board, myPosition,);
+            case ROOK:
+                addTrajectories(possibleMoves, board, myPosition, rookMoveSet); break;
         }
         return possibleMoves;
     }
@@ -91,9 +92,7 @@ public class ChessPiece {
                 int row = myPosition.getRow() + (mul * dir[0]);
                 int col = myPosition.getColumn() + (mul * dir[1]);
 
-                if (row < 1 || row > 8 || col < 1 || col > 8) {
-                    break;
-                }
+                if (row < 1 || row > 8 || col < 1 || col > 8) break;
 
                 ChessPosition newPosition = new ChessPosition(row, col);
                 if (!approveMove(moveList, board, myPosition, newPosition)) break;
