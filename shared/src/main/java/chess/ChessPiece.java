@@ -46,8 +46,6 @@ public class ChessPiece {
         return type;
     }
 
-
-
     private boolean approveMove(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
         if (board.getPiece(newPosition) == null) {
             moveList.add(new ChessMove(myPosition, newPosition, null));
@@ -75,24 +73,29 @@ public class ChessPiece {
 
         int[][] bishopMoveSet = {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
         int[][] rookMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}};
+        int[][] kingMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
         int[][] queenMoveSet = {{1,0}, {-1,0}, {0,-1}, {0,1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+        int[][] knightMoveSet = {{-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
 
         switch (type) {
             case BISHOP:
-                addTrajectories(possibleMoves, board, myPosition, bishopMoveSet); break;
+                addTrajectories(possibleMoves, board, myPosition, bishopMoveSet, 8); break;
+
+            case KING:
+                addTrajectories(possibleMoves, board, myPosition, kingMoveSet, 1); break;
 
             case ROOK:
-                addTrajectories(possibleMoves, board, myPosition, rookMoveSet); break;
+                addTrajectories(possibleMoves, board, myPosition, rookMoveSet, 8); break;
 
             case QUEEN:
-                addTrajectories(possibleMoves, board, myPosition, queenMoveSet); break;
+                addTrajectories(possibleMoves, board, myPosition, queenMoveSet, 8); break;
         }
         return possibleMoves;
     }
 
-    private void addTrajectories(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, int[][] directions) {
+    private void addTrajectories(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, int[][] directions, int distance) {
         for (int[] movement : directions) {
-            for (int length = 1; length <= 8; length++) {
+            for (int length = 1; length <= distance; length++) {
                 int row = myPosition.getRow() + (length * movement[0]);
                 int col = myPosition.getColumn() + (length * movement[1]);
 
