@@ -1,7 +1,8 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -10,9 +11,9 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private ChessGame.TeamColor pieceColor;
-    private PieceType type;
 
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -35,14 +36,29 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
+    }
+
+
+
+    private boolean approveMove(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
+        if (board.getPiece(newPosition) == null) {
+            moveList.add(new ChessMove(myPosition, newPosition, null));
+            return true;
+        }
+
+        else if (board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor) {
+                moveList.add(new ChessMove(myPosition, newPosition, null));
+        }
+
+        return false;
     }
 
     /**
@@ -53,57 +69,48 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        ChessPiece piece = board.getPiece(myPosition);
+        ChessPiece.PieceType type = piece.getPieceType();
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+
+        int[][] bishopMoveSet = {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
+
         switch (type) {
             case BISHOP:
-                return bishopMoves(board, myPosition);
-            case KNIGHT:
-                return knightMoves(board, myPosition);
-            case ROOK:
-                return rookMoves(board, myPosition);
-            case PAWN:
-                return pawnMoves(board, myPosition);
-            case QUEEN:
-                return queenMoves(board, myPosition);
-            case KING:
-                return kingMoves(board, myPosition);
-            default:
-                throw new IllegalArgumentException("Unknown chess piece type");
-        }
+                addTrajectories(possibleMoves, board, myPosition, bishopMoveSet); break;
 
-        public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for bishop moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
+//            case KNIGHT:
+//                addTrajectories(possibleMoves, board, myPosition,);
         }
+        return possibleMoves;
+    }
 
-        public Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for knight moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
-        }
+    private void addTrajectories(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, int[][] directions) {
+        for (int[] dir : directions) {
+            for (int mul = 1; mul <= 8; mul++) {
+                int row = myPosition.getRow() + (mul * dir[0]);
+                int col = myPosition.getColumn() + (mul * dir[1]);
 
-        public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for rook moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
-        }
+                if (row < 1 || row > 8 || col < 1 || col > 8) {
+                    break;
+                }
 
-        public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for pawn moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
+                ChessPosition newPosition = new ChessPosition(row, col);
+                if (!approveMove(moveList, board, myPosition, newPosition)) break;
+            }
         }
+    }
 
-        public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for queen moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
 
-        public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-            // Implementation for king moves
-            // Add valid moves to a Collection<ChessMove> and return it
-            return new ArrayList<>();
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
 }
-
