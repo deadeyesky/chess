@@ -141,12 +141,12 @@ public class ChessPiece {
         }
     }
 
-    private void pawnMove(HashSet<ChessMove> moveList, ChessPosition myPosition, ChessPosition target, PieceType[] upgrade, boolean isPromoted) {
+    private void pawnMove(HashSet<ChessMove> possibleMoves, ChessPosition myPosition, ChessPosition enemy, PieceType[] upgrade, boolean isPromoted) {
         if (isPromoted) {
             for (PieceType up : upgrade) {
-                moveList.add(new ChessMove(myPosition, target, up));
+                possibleMoves.add(new ChessMove(myPosition, enemy, up));
             }
-        } else moveList.add(new ChessMove(myPosition, target, null));
+        } else possibleMoves.add(new ChessMove(myPosition, enemy, null));
     }
 
     @Override
