@@ -24,14 +24,8 @@ public class ChessPosition {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-
-        if (this == object) {
-            return true;
-        }
-
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
         ChessPosition chessMove = (ChessPosition) object;
         return this.row == chessMove.row && this.col == chessMove.col;
     }
@@ -47,7 +41,6 @@ public class ChessPosition {
      */
     public int getRow() {
         return row;
-//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -56,6 +49,5 @@ public class ChessPosition {
      */
     public int getColumn() {
         return col;
-//        throw new RuntimeException("Not implemented");
     }
 }
