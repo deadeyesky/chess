@@ -82,7 +82,7 @@ public class ChessPiece {
     }
 
     private boolean noMoreForwardMovement (ChessBoard board, int tCol, ChessPosition target) {
-        return tCol >= 1 && tCol <= 8 && board.getPiece(target) != null && board.getPiece(target).getTeamColor() != pieceColor;
+        return tCol >= 1 && tCol <= 8 && !noPieceAhead(board, target) && board.getPiece(target).getTeamColor() != pieceColor;
     }
 
 
