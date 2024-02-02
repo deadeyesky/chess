@@ -53,7 +53,7 @@ public class ChessMove {
     }
 
     @Override
-    public String toString () {
-        return String.format("%s (Proms: %s)", endPosition, promotionPiece);
+    public int hashCode() {
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 }
