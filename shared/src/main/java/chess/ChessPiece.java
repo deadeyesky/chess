@@ -32,6 +32,7 @@ public class ChessPiece {
         PAWN
     }
 
+
     /**
      * @return Which team this chess piece belongs to
      */
@@ -46,17 +47,45 @@ public class ChessPiece {
         return type;
     }
 
+    private boolean outOfBounds (int row, int col) {
+        return (row < 1 || row > 8 || col < 1 || col > 8);
+    }
+
+    private boolean noPieceAhead (ChessBoard board, ChessPosition newPosition) {
+        return board.getPiece(newPosition) == null;
+    }
+
+    private boolean enemyAhead (ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
+        return board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor;
+    }
+
+    //private
+
     private boolean approveMove(HashSet<ChessMove> moveList, ChessBoard board, ChessPosition myPosition, ChessPosition newPosition) {
-        if (board.getPiece(newPosition) == null) {
+        if (noPieceAhead(board, newPosition)) {
             moveList.add(new ChessMove(myPosition, newPosition, null)); return true;
         }
 
-        else if (board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor) {
+        else if (enemyAhead(board, myPosition, newPosition)) {
                 moveList.add(new ChessMove(myPosition, newPosition, null));
         }
 
         return false;
     }
+
+    private boolean endOfBoard (int row, int fwd) {
+        return (row + fwd == 1 || row + fwd == 8);
+    }
+
+    private boolean pawnAtStart (int row) {
+        return row == 2 || row == 7;
+    }
+
+    private boolean noMoreForwardMovement (ChessBoard board, int tCol, ChessPosition target) {
+        return tCol >= 1 && tCol <= 8 && board.getPiece(target) != null && board.getPiece(target).getTeamColor() != pieceColor;
+    }
+
+
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -86,13 +115,17 @@ public class ChessPiece {
         };
     }
 
-    private HashSet<ChessMove> addTrajectories(HashSet<ChessMove> possibleMoves, ChessBoard board, ChessPosition myPosition, int[][] directions, int distance) {
+    private HashSet<ChessMove> addTrajectories(HashSet<ChessMove> possibleMoves,
+                                               ChessBoard board,
+                                               ChessPosition myPosition,
+                                               int[][] directions,
+                                               int distance) {
         for (int[] movement : directions) {
             for (int length = 1; length <= distance; length++) {
                 int row = myPosition.getRow() + (length * movement[0]);
                 int col = myPosition.getColumn() + (length * movement[1]);
 
-                if (row < 1 || row > 8 || col < 1 || col > 8) break;
+                if (outOfBounds(row, col)) break;
 
                 ChessPosition newPosition = new ChessPosition(row, col);
                 if (!approveMove(possibleMoves, board, myPosition, newPosition)) break;
@@ -102,21 +135,31 @@ public class ChessPiece {
     }
 
     private HashSet<ChessMove> addPawnTrajectory(HashSet<ChessMove> possibleMoves, ChessBoard board, ChessPosition myPosition) {
-        int row = myPosition.getRow(), col = myPosition.getColumn();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
         int directionMultiplier = (pieceColor == ChessGame.TeamColor.WHITE) ? 1: -1;
 
-        ChessPiece.PieceType[] upgrades = {PieceType.KNIGHT, PieceType.ROOK, PieceType.QUEEN, PieceType.BISHOP};
+        ChessPiece.PieceType[] upgrades = {
+                PieceType.KNIGHT,
+                PieceType.ROOK,
+                PieceType.QUEEN,
+                PieceType.BISHOP
+        };
 
         ChessPosition ahead = new ChessPosition(row + directionMultiplier, col);
-        if (board.getPiece(ahead) == null) {
-            if (row + directionMultiplier == 1 || row + directionMultiplier == 8) {
+        if (noPieceAhead(board, ahead)) {
+            if (endOfBoard(row, directionMultiplier)) {
                 for (ChessPiece.PieceType upgrade : upgrades) pawnMove(possibleMoves, myPosition, ahead, new ChessPiece.PieceType[]{upgrade}, true);
-            } else {
+            }
+
+            else {
                 pawnMove(possibleMoves, myPosition, ahead, null, false);
 
-                if (row == 2 || row == 7) {
+                if (pawnAtStart(row)) {
                     ChessPosition moveTwo = new ChessPosition(row + 2 * directionMultiplier, col);
-                    if (board.getPiece(moveTwo) == null) pawnMove(possibleMoves, myPosition, moveTwo, null, false);
+                    if (noPieceAhead(board, moveTwo)) {
+                        pawnMove(possibleMoves, myPosition, moveTwo, null, false);
+                    }
                 }
             }
         }
@@ -130,10 +173,10 @@ public class ChessPiece {
     private void pawnAttack(HashSet<ChessMove> possibleMoves, ChessBoard board, ChessPosition myPosition, int fwd, PieceType[] upgrade, int tCol) {
         int row = myPosition.getRow();
         ChessPosition target = new ChessPosition(row + fwd, tCol);
-        if (tCol >= 1 && tCol <= 8 && board.getPiece(target) != null && board.getPiece(target).getTeamColor() != pieceColor) {
-            if (row + fwd == 1 || row + fwd == 8) {
-                for (PieceType piece : upgrade) {
-                    pawnMove(possibleMoves, myPosition, target, new PieceType[]{piece}, true);
+        if (noMoreForwardMovement(board, tCol, target)) {
+            if (endOfBoard(row, fwd)) {
+                for (PieceType up : upgrade) {
+                    pawnMove(possibleMoves, myPosition, target, new PieceType[]{up}, true);
                 }
             } else {
                 pawnMove(possibleMoves, myPosition, target, null, false);
