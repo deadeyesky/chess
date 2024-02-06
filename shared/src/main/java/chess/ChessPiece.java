@@ -85,8 +85,6 @@ public class ChessPiece {
         return tCol >= 1 && tCol <= 8 && !noPieceAhead(board, target) && board.getPiece(target).getTeamColor() != pieceColor;
     }
 
-
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
