@@ -94,11 +94,15 @@ public class ChessGame {
             } catch (InvalidMoveException e) {
                 invalid = true;
             }
-            if (isInCheck(piece.getTeamColor()) || isInStalemate(piece.getTeamColor()) || isInCheckmate(piece.getTeamColor())) invalid = true;
+            if (compromisedKing(piece.getTeamColor())) invalid = true;
             if (!invalid) validMoves.add(move);
             board = new ChessBoard(boardCopy);
         }
         return validMoves;
+    }
+
+    public boolean isOut (ChessPosition position) {
+        return position.getRow() < 1 || position.getRow() > 8 || position.getColumn() < 1 || position.getColumn() > 8;
     }
 
     /**
@@ -108,7 +112,30 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition endPosition = move.getEndPosition(), startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+        ChessPiece occupyingPiece = board.getPiece(endPosition);
+
+        if (isOut(move.getStartPosition()) || isOut(move.getEndPosition())) throw new InvalidMoveException("Out of bounds.");
+
+        if (piece.getTeamColor() != this.getTeamTurn()) throw new InvalidMoveException("Not turn.");
+
+        if (!piece.pieceMoves(board, startPosition).contains(move)) throw new InvalidMoveException("Illegal move.");
+
+        board.addPiece(endPosition, piece); board.addPiece(startPosition, null);
+
+        if (isInCheck(getTeamTurn())) {
+            board.addPiece(startPosition, piece); board.addPiece(endPosition, occupyingPiece);
+            throw new InvalidMoveException("King is in check");
+        }
+
+        if (move.getPromotionPiece() != null) {
+            ChessPiece.PieceType promotionPiece = move.getPromotionPiece(); TeamColor pieceColor = piece.getTeamColor();
+            board.addPiece(endPosition, new ChessPiece(pieceColor, promotionPiece));
+        }
+
+        nextTurn();
+
     }
 
     /**
