@@ -135,6 +135,12 @@ public class ChessGame {
         return false;
     }
 
+     public void notInCheck (TeamColor teamColor, ChessMove move, ChessPiece antes) {
+         if (!isInCheck(teamColor)) {
+             cancelMove(move, antes);
+         }
+     }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -147,10 +153,7 @@ public class ChessGame {
             for (ChessMove move : returnAllMovesOfTeam(teamColor)) {
                 ChessPiece antes = board.getPiece(move.getEndPosition());
                 tryMove(move);
-                if (!isInCheck(teamColor)) {
-                    cancelMove(move, antes);
-                    return false;
-                }
+                notInCheck(teamColor, move, antes);
                 cancelMove(move, antes);
             }
             return true;
