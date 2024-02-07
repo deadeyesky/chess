@@ -63,10 +63,10 @@ public class ChessGame {
         updatePiece(move, chessPiece);
     }
 
-    private void cancelMove (ChessMove move) {
+    private void cancelMove (ChessMove move, ChessPiece antes) {
         ChessPiece chessPiece = board.getPiece(move.getEndPosition());
         if (move.getPromotionPiece() != null) chessPiece.promotePiece(ChessPiece.PieceType.PAWN);
-        board.addPiece(move.getStartPosition(), chessPiece); board.addPiece(move.getEndPosition(), chessPiece);
+        board.addPiece(move.getStartPosition(), chessPiece); board.addPiece(move.getEndPosition(), antes);
     }
 
     private boolean isPiece (ChessPiece chessPiece, TeamColor color) {
@@ -104,7 +104,11 @@ public class ChessGame {
         ChessPiece chessPiece = board.getPiece(startPosition);
         for (ChessMove move : chessPiece.pieceMoves(board, startPosition)) {
             ChessPiece antes = board.getPiece(move.getEndPosition());
+            tryMove(move);
+            if (!isInCheck(chessPiece.getTeamColor())) okayMoves.add(move);
+            cancelMove(move, antes);
         }
+        return okayMoves;
     }
 
     public boolean isOut (ChessPosition position) {
