@@ -43,8 +43,12 @@ public class ChessGame {
         BLACK
     }
 
+    private TeamColor teamSwitcher (boolean condition) {
+        return (condition) ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
     private void nextTurn() {
-        setTeamTurn((getTeamTurn() == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE);
+        setTeamTurn(teamSwitcher(getTeamTurn() == TeamColor.WHITE));
     }
 
     private boolean compromisedKing (ChessPiece king, TeamColor teamColor) {
@@ -57,16 +61,20 @@ public class ChessGame {
         board.removePiece(move.getStartPosition());
     }
 
+    private boolean notNullPromotion (ChessMove move) {
+        return move.getPromotionPiece() != null;
+    }
+
 
     private void tryMove (ChessMove move) {
         ChessPiece chessPiece = board.getPiece(move.getStartPosition());
-        if (move.getPromotionPiece() != null) chessPiece.promotePiece(move.getPromotionPiece());
+        if (notNullPromotion(move)) chessPiece.promotePiece(move.getPromotionPiece());
         updatePiece(move, chessPiece);
     }
 
     private void cancelMove (ChessMove move, ChessPiece antes) {
         ChessPiece chessPiece = board.getPiece(move.getEndPosition());
-        if (move.getPromotionPiece() != null) chessPiece.promotePiece(ChessPiece.PieceType.PAWN);
+        if (notNullPromotion(move)) chessPiece.promotePiece(ChessPiece.PieceType.PAWN);
         board.addPiece(move.getStartPosition(), chessPiece); board.addPiece(move.getEndPosition(), antes);
     }
 
@@ -128,7 +136,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        TeamColor opposingTeam = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        TeamColor opposingTeam = teamSwitcher(teamColor == TeamColor.WHITE);
         for (ChessMove move : returnAllMovesOfTeam(opposingTeam)) {
             if (compromisedKing(board.getPiece(move.getEndPosition()), teamColor)) return true;
         }
