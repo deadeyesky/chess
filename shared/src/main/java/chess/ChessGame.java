@@ -51,9 +51,6 @@ public class ChessGame {
         return isInCheck(teamColor) || isInStalemate(teamColor) || isInCheckmate(teamColor);
     }
 
-    private boolean isValidMove(ChessMove move, TeamColor teamColor) {
-
-    }
 
     public void updatePiece (ChessMove move, ChessPiece chessPiece) {
         board.addPiece(move.getStartPosition(), chessPiece); board.removePiece(move.getEndPosition());
@@ -72,15 +69,27 @@ public class ChessGame {
         board.addPiece(move.getStartPosition(), chessPiece); board.addPiece(move.getEndPosition(), chessPiece);
     }
 
+    private boolean isPiece (ChessPiece chessPiece, TeamColor color) {
+        return chessPiece != null && chessPiece.getTeamColor() == color;
+    }
+
     private Collection<ChessPosition> returnAllPositionsOfTeam (TeamColor color) {
-        HashSet<ChessPosition> possibleMoves = new HashSet<>();
+        HashSet<ChessPosition> possiblePositions = new HashSet<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece chessPiece = board.getPiece(position);
-                if (chessPiece != null && chessPiece.getTeamColor() == color) possibleMoves.add(position);
+                if (isPiece(chessPiece, color)) possiblePositions.add(position);
             }
         }
+        return possiblePositions;
+    }
+
+    private Collection<ChessMove> returnAllMovesOfTeam (TeamColor color) {
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+
+        for (ChessPosition positions : returnAllPositionsOfTeam(color)) possibleMoves.addAll(board.getPiece(positions).pieceMoves(board, positions));
+        return possibleMoves;
     }
 
     /**
@@ -95,7 +104,6 @@ public class ChessGame {
         ChessPiece chessPiece = board.getPiece(startPosition);
         for (ChessMove move : chessPiece.pieceMoves(board, startPosition)) {
             ChessPiece antes = board.getPiece(move.getEndPosition());
-
         }
     }
 
