@@ -10,26 +10,26 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
     }
 
-    public ChessBoard(ChessBoard dup) {
-        this.squares = new ChessPiece[8][8];
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                ChessPiece orgnlPiece = dup.squares[row][col];
-                if (orgnlPiece != null) {
-                    ChessPiece duplicatedPiece = new ChessPiece(orgnlPiece.getTeamColor(), orgnlPiece.getPieceType());
-                    this.squares[row][col] = duplicatedPiece;
-                }
-                else {
-                    this.squares[row][col] = null;
-                }
-            }
-        }
-    }
+//    public ChessBoard(ChessBoard dup) {
+//        this.squares = new ChessPiece[8][8];
+//        for (int row = 0; row < 8; row++) {
+//            for (int col = 0; col < 8; col++) {
+//                ChessPiece orgnlPiece = dup.squares[row][col];
+//                if (orgnlPiece != null) {
+//                    ChessPiece duplicatedPiece = new ChessPiece(orgnlPiece.getTeamColor(), orgnlPiece.getPieceType());
+//                    this.squares[row][col] = duplicatedPiece;
+//                }
+//                else {
+//                    this.squares[row][col] = null;
+//                }
+//            }
+//        }
+//    }
 
 
     /**
