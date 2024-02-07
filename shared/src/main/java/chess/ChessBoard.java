@@ -21,8 +21,8 @@ public class ChessBoard {
             for (int col = 0; col < 8; col++) {
                 ChessPiece orgnlPiece = dup.squares[row][col];
                 if (orgnlPiece != null) {
-                    ChessPiece copiedPiece = new ChessPiece(orgnlPiece.getTeamColor(), orgnlPiece.getPieceType());
-                    this.squares[row][col] = copiedPiece;
+                    ChessPiece duplicatedPiece = new ChessPiece(orgnlPiece.getTeamColor(), orgnlPiece.getPieceType());
+                    this.squares[row][col] = duplicatedPiece;
                 }
                 else {
                     this.squares[row][col] = null;
@@ -30,6 +30,7 @@ public class ChessBoard {
             }
         }
     }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -42,6 +43,18 @@ public class ChessBoard {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
+
+    public void removePiece(ChessPosition position) {
+        squares[position.getRow() - 1][position.getColumn() - 1] = null;
+    }
+
+
+    public void movePiece (ChessPosition startPosition,
+                           ChessPosition endPosition,
+                           ChessPiece piece) {
+        this.removePiece(startPosition, piece);
+        this.addPiece(endPosition, piece);
+    }
     /**
      * Gets a chess piece on the chessboard
      *
