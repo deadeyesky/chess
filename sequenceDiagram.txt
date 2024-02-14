@@ -1,0 +1,71 @@
+actor Client
+participant Server
+participant Authentication
+participant RegistrationService
+participant GameService
+participant DataAccess
+database db
+
+group #navy Registration #white
+Client -> Server: [POST] /user\n{username, password, email}
+Server -> RegistrationService: register(username, password, email)
+RegistrationService -> DataAccess: getUser(username)
+DataAccess -> db: SELECT username from user
+DataAccess --> RegistrationService: null
+RegistrationService -> DataAccess: createUser(username, password)
+DataAccess -> db: INSERT username, password, email INTO user
+RegistrationService -> DataAccess: createAuth(username)
+DataAccess -> db: INSERT username, authToken INTO auth
+DataAccess --> RegistrationService: authToken
+RegistrationService --> Server: authToken
+Server --> Client: 200\n{authToken}
+end
+
+group #green Logout #white
+Client -> Server: [DELETE] /session\nauthToken
+Server -> Authentication: logout(authToken)
+Authentication -> DataAccess: deleteAuthToken(authToken)
+DataAccess -> db: DELETE FROM auth WHERE authToken = authToken
+DataAccess --> Authentication: success
+Authentication --> Server: success
+Server -->Client: 200 (success)
+end
+
+group #red List Games #white
+Client -> Server: [GET] /game\nauthToken
+Server -> GameService: listGames(authToken)
+GameService -> DataAccess: getGames()
+DataAccess -> db: SELECT * FROM games
+DataAccess --> GameService: games
+GameService --> Server: games
+Server --> Client: 200\n{games}
+end
+
+group #purple Create Game #white
+Client -> Server: [POST] /game\nauthToken\n{gameName}
+Server -> GameService: createGame(authToken, gameName)
+GameService -> DataAccess: createGame(authToken, gameName)
+DataAccess -> db: INSERT INTO games (gameName) VALUES (gameName)
+DataAccess --> GameService: gameID
+GameService --> Server: gameID
+Server --> Client: 200\n{gameID}
+end
+
+group #yellow Join Game #black
+Client -> Server: [PUT] /game\nauthToken\n{ClientColor, gameID}
+Server -> GameService: joinGame(authToken, ClientColor, gameID)
+GameService -> DataAccess: joinGame(authToken, ClientColor, gameID)
+DataAccess -> db: UPDATE games SET playerColor = ClientColor WHERE gameID = gameID
+DataAccess --> GameService: success
+GameService --> Server: success
+Server --> Client: 200\n{success}
+end
+
+group #gray Clear application #white
+Client -> Server: [DELETE] /db
+Server -> db: clear()
+db -> DataAccess: clear()
+DataAccess -> db: DELETE FROM user; DELETE FROM auth; DELETE FROM games;
+DataAccess --> Server: success;
+Server -->Client: 200 (success)
+end
