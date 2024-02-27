@@ -1,2 +1,4 @@
-package dataAccess;public class MemoryAuthDAO {
+package dataAccess;
+
+public class MemoryAuthDAO {
 }
