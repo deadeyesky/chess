@@ -1,5 +1,6 @@
 package server;
 
+import com.google.gson.Gson;
 import spark.*;
 
 public class Server {
@@ -10,6 +11,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.get("/game", (request, response) -> ));
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -18,5 +20,12 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+
+    private String registerRoutine (Request request, Response response) {
+        response.header("Content-Type", "application/json");
+        Gson gson = new Gson();
+        Reg
     }
 }
